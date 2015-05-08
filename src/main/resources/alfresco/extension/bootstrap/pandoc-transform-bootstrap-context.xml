@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <bean id="pandoc" class="org.alfresco.repo.management.subsystems.ChildApplicationContextFactory" parent="abstractPropertyBackedBean">
+    <property name="autoStart">
+      <value>true</value>
+    </property>
+  </bean>
+
+  <bean id="transformer.worker.Pandoc" class="org.alfresco.repo.management.subsystems.SubsystemProxyFactory">
+    <property name="sourceApplicationContextFactory">
+      <ref bean="pandoc" />
+    </property>
+    <property name="sourceBeanName">
+      <value>transformer.worker.Pandoc</value>
+    </property>
+    <property name="interfaces">
+      <list>
+        <value>org.alfresco.repo.content.transform.ContentTransformerWorker</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="transformer.Pandoc" class="org.alfresco.repo.content.transform.ProxyContentTransformer" parent="baseContentTransformer">
+    <property name="worker">
+      <ref bean="transformer.worker.Pandoc" />
+    </property>
+  </bean>
+
+</beans>

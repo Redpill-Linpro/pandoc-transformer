@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.redpill-linpro.alfresco</groupId>
+    <artifactId>alfresco-base</artifactId>
+    <version>1.1.1.9</version>
+  </parent>
+
+  <groupId>org.redpill-linpro.alfreso</groupId>
+  <artifactId>pandoc-transformer</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Pandoc Transformer</name>
+  <description>An Alfresco transformer for pandoc</description>
+
+  <properties>
+    <alfresco.version>4.2.4</alfresco.version>
+  </properties>
+
+  <developers>
+    <developer>
+      <id>niklas.ekman</id>
+      <name>Niklas Ekman</name>
+      <email>niklas.ekman (at) redpill-linpro.com</email>
+      <organization>Redpill Linpro AB</organization>
+      <organizationUrl>http://www.redpill-linpro.com</organizationUrl>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:oakman/pandoc-transformer.git</connection>
+    <developerConnection>scm:git:git@github.com:oakman/pandoc-transformer.git</developerConnection>
+    <url>scm:git:git@github.com:oakman/pandoc-transformer.git</url>
+  </scm>
+  
+  <issueManagement>
+    <system>Git</system>
+    <url>https://github.com/oakman/pandoc-transformer/issues</url>
+  </issueManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>${alfresco.groupId}</groupId>
+      <artifactId>alfresco-repository</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.redpill-linpro.alfresco</groupId>
+      <artifactId>alfresco-test-repo</artifactId>
+      <version>1.0.8</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>
