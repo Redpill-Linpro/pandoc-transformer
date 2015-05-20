@@ -178,6 +178,15 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_PDF));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_PDF));
+
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING));
+
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_HTML));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_HTML));
+
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT));
   }
 
   private boolean isMarkdown(String sourceMimetype) {
