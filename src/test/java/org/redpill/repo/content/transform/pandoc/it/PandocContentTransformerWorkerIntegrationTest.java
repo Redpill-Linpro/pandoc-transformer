@@ -37,6 +37,9 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
   private static final String DEFAULT_USER = "testuser_" + System.currentTimeMillis();
 
   public static final QName RD_PDF = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "pdf");
+  public static final QName RD_DOCX = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "docx");
+  public static final QName RD_HTML = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "html");
+  public static final QName RD_ODT = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "odt");
 
   @Autowired
   @Qualifier("transformer.worker.Pandoc")
@@ -100,6 +103,26 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
     testTransform(MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT, "odt");
   }
 
+  @Test
+  public void testPdfRender() throws Exception {
+    testRender(MimetypeMap.MIMETYPE_PDF, RD_PDF, "pdf");
+  }
+
+  @Test
+  public void testDocxRender() throws Exception {
+    testRender(MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING, RD_DOCX, "docx");
+  }
+
+  @Test
+  public void testHtmlRender() throws Exception {
+    testRender(MimetypeMap.MIMETYPE_HTML, RD_HTML, "html");
+  }
+
+  @Test
+  public void testOdtRender() throws Exception {
+    testRender(MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT, RD_ODT, "odt");
+  }
+
   public void testTransform(String mimetype, String extension) throws Exception {
     SiteInfo site = createSite();
 
@@ -125,20 +148,19 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
     }
   }
 
-  @Test
-  public void testPdfRender() throws Exception {
+  public void testRender(String mimetype, QName renditionName, String extension) throws Exception {
     SiteInfo site = createSite();
 
     try {
       NodeRef document = uploadDocument(site, "test.md").getNodeRef();
 
-      RenditionDefinition renditionDefinition = createRenditionDefinition();
+      RenditionDefinition renditionDefinition = createRenditionDefinition(mimetype, renditionName);
 
       NodeRef rendition = _renditionService.render(document, renditionDefinition).getChildRef();
 
       ContentReader reader = _contentService.getReader(rendition, ContentModel.PROP_CONTENT);
 
-      File targetFile = TempFileProvider.createTempFile("temp_", ".pdf");
+      File targetFile = TempFileProvider.createTempFile("temp_", "." + extension);
 
       reader.getContent(targetFile);
 
@@ -150,8 +172,8 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
     }
   }
 
-  private RenditionDefinition createRenditionDefinition() {
-    RenditionDefinition definition = _renditionService.createRenditionDefinition(RD_PDF, ReformatRenderingEngine.NAME);
+  private RenditionDefinition createRenditionDefinition(String mimetype, QName renditionName) {
+    RenditionDefinition definition = _renditionService.createRenditionDefinition(renditionName, ReformatRenderingEngine.NAME);
 
     definition.setTrackStatus(true);
 
@@ -160,7 +182,7 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
     parameters.put(RenditionService.PARAM_RENDITION_NODETYPE, ContentModel.TYPE_CONTENT);
 
     parameters.put(AbstractRenderingEngine.PARAM_SOURCE_CONTENT_PROPERTY, ContentModel.PROP_CONTENT);
-    parameters.put(AbstractRenderingEngine.PARAM_MIME_TYPE, "application/pdf");
+    parameters.put(AbstractRenderingEngine.PARAM_MIME_TYPE, mimetype);
 
     parameters.put(AbstractTransformationRenderingEngine.PARAM_TIMEOUT_MS, 300000L);
     parameters.put(AbstractTransformationRenderingEngine.PARAM_READ_LIMIT_TIME_MS, -1L);
