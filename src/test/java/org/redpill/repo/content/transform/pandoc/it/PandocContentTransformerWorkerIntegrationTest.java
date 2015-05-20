@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.alfresco.model.ContentModel;
 import org.alfresco.repo.content.MimetypeMap;
 import org.alfresco.repo.content.filestore.FileContentWriter;
@@ -31,6 +29,8 @@ import org.alfresco.util.TempFileProvider;
 import org.junit.Test;
 import org.redpill.alfresco.test.AbstractRepoIntegrationTest;
 import org.redpill.repo.content.transform.pandoc.PandocContentTransformerWorker;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoIntegrationTest {
 
@@ -38,13 +38,16 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
 
   public static final QName RD_PDF = QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "pdf");
 
-  @Resource(name = "transformer.worker.Pandoc")
+  @Autowired
+  @Qualifier("transformer.worker.Pandoc")
   private ContentTransformerWorker _worker;
 
-  @Resource(name = "ContentService")
+  @Autowired
+  @Qualifier("ContentService")
   private ContentService _contentService;
 
-  @Resource(name = "RenditionService")
+  @Autowired
+  @Qualifier("RenditionService")
   private RenditionService _renditionService;
 
   @Override
@@ -78,7 +81,26 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
   }
 
   @Test
-  public void testTransform() throws Exception {
+  public void testPdfTransform() throws Exception {
+    testTransform(MimetypeMap.MIMETYPE_PDF, "pdf");
+  }
+
+  @Test
+  public void testDocxTransform() throws Exception {
+    testTransform(MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING, "docx");
+  }
+
+  @Test
+  public void testHtmlTransform() throws Exception {
+    testTransform(MimetypeMap.MIMETYPE_HTML, "html");
+  }
+
+  @Test
+  public void testOdtTransform() throws Exception {
+    testTransform(MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT, "odt");
+  }
+
+  public void testTransform(String mimetype, String extension) throws Exception {
     SiteInfo site = createSite();
 
     try {
@@ -87,9 +109,9 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
       ContentReader reader = _contentService.getReader(document, ContentModel.PROP_CONTENT);
       reader.setMimetype(PandocContentTransformerWorker.MIMETYPE_MARKDOWN1);
 
-      File targetFile = TempFileProvider.createTempFile("temp_", ".pdf");
+      File targetFile = TempFileProvider.createTempFile("temp_", "." + extension);
       ContentWriter writer = new FileContentWriter(targetFile);
-      writer.setMimetype(MimetypeMap.MIMETYPE_PDF);
+      writer.setMimetype(mimetype);
 
       TransformationOptions options = new TransformationOptions();
 
@@ -104,7 +126,7 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
   }
 
   @Test
-  public void testRender() throws Exception {
+  public void testPdfRender() throws Exception {
     SiteInfo site = createSite();
 
     try {
