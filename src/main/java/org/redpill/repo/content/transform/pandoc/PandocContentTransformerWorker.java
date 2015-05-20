@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 import org.alfresco.error.AlfrescoRuntimeException;
 import org.alfresco.repo.content.MimetypeMap;
@@ -23,6 +22,8 @@ import org.alfresco.util.exec.RuntimeExec;
 import org.alfresco.util.exec.RuntimeExec.ExecutionResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -34,13 +35,16 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
   private static final Logger LOG = Logger.getLogger(PandocContentTransformerWorker.class);
 
-  @Resource(name = "transformer.Pandoc.CheckCommand")
+  @Autowired
+  @Qualifier("transformer.Pandoc.CheckCommand")
   private RuntimeExec _checkCommand;
 
-  @Resource(name = "transformer.Pandoc.Executer")
+  @Autowired
+  @Qualifier("transformer.Pandoc.Executer")
   private RuntimeExec executer;
 
-  @Resource(name = "MimetypeService")
+  @Autowired
+  @Qualifier("MimetypeService")
   private MimetypeService _mimetypeService;
 
   private boolean _available = false;
@@ -59,15 +63,38 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
   @Override
   public boolean isTransformable(String sourceMimetype, String targetMimetype, TransformationOptions options) {
+    if (!isAvailable()) {
+      return false;
+    }
+
     Assert.hasText(sourceMimetype);
     Assert.hasText(targetMimetype);
 
-    // only support markdown as of now
-    return (sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN1) || sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN2)) && targetMimetype.equalsIgnoreCase(MimetypeMap.MIMETYPE_PDF);
+    if (isMarkdown(sourceMimetype) && targetMimetype.equalsIgnoreCase(MimetypeMap.MIMETYPE_PDF)) {
+      return true;
+    }
+
+    if (isMarkdown(sourceMimetype) && targetMimetype.equalsIgnoreCase(MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING)) {
+      return true;
+    }
+
+    if (isMarkdown(sourceMimetype) && targetMimetype.equalsIgnoreCase(MimetypeMap.MIMETYPE_HTML)) {
+      return true;
+    }
+
+    if (isMarkdown(sourceMimetype) && targetMimetype.equalsIgnoreCase(MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT)) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
   public void transform(ContentReader reader, ContentWriter writer, TransformationOptions options) throws Exception {
+    if (!isAvailable()) {
+      return;
+    }
+
     // get mimetypes
     String sourceMimetype = getMimetype(reader);
     String targetMimetype = getMimetype(writer);
@@ -91,23 +118,28 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
     Map<String, String> properties = new HashMap<String, String>();
 
-    properties.put("from_format", "markdown_github");
-    properties.put("to_format", "latex");
+    String sourceFormat = "markdown_github";
+    String targetFormat = getTargetFormat(targetMimetype);
+    
+    properties.put("from_format", sourceFormat);
+    properties.put("to_format", targetFormat);
     properties.put("source", sourceFile.getAbsolutePath());
     properties.put("target", targetFile.getAbsolutePath());
 
     RuntimeExec.ExecutionResult result = executer.execute(properties, timeoutMs);
 
     if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0) {
-      throw new ContentIOException("Failed to perform ImageMagick transformation: \n" + result);
+      throw new ContentIOException("Failed to perform Pandoc transformation: \n" + result);
     }
 
     // check that the file was created
     if (!targetFile.exists() || targetFile.length() == 0) {
-      throw new ContentIOException("JMagick transformation failed to write output file");
+      throw new ContentIOException("Pandoc transformation failed to write output file");
     }
+    
     // upload the output image
     writer.putContent(targetFile);
+    
     // done
     if (LOG.isDebugEnabled()) {
       LOG.debug("Transformation completed: \n" + "   source: " + reader + "\n" + "   target: " + writer + "\n" + "   options: " + options);
@@ -128,6 +160,8 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
       }
 
       _versionString = result.getStdOut().trim();
+      
+      _available = true;
     } catch (Throwable e) {
       _available = false;
 
@@ -144,6 +178,32 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_PDF));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_PDF));
+  }
+
+  private boolean isMarkdown(String sourceMimetype) {
+    return sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN1) || sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN2);
+  }
+
+  private String getTargetFormat(String targetMimetype) {
+    Assert.hasText(targetMimetype);
+    
+    if (MimetypeMap.MIMETYPE_PDF.equalsIgnoreCase(targetMimetype)) {
+      return "latex";
+    }
+
+    if (MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING.equalsIgnoreCase(targetMimetype)) {
+      return "docx";
+    }
+
+    if (MimetypeMap.MIMETYPE_HTML.equalsIgnoreCase(targetMimetype)) {
+      return "html5";
+    }
+
+    if (MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT.equalsIgnoreCase(targetMimetype)) {
+      return "odt";
+    }
+
+    throw new IllegalArgumentException(String.format("The target mimetype '%s' doesn't have a corresponding target format.", targetMimetype));
   }
 
 }
