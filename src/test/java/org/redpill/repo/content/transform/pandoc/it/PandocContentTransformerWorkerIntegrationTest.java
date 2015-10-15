@@ -184,6 +184,7 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
     RenditionDefinition definition = _renditionService.createRenditionDefinition(renditionName, ReformatRenderingEngine.NAME);
 
     definition.setTrackStatus(true);
+    definition.setExecuteAsynchronously(false);
 
     Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
