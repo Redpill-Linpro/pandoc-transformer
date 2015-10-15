@@ -21,7 +21,6 @@ import org.alfresco.service.cmr.repository.ContentReader;
 import org.alfresco.service.cmr.repository.ContentService;
 import org.alfresco.service.cmr.repository.ContentWriter;
 import org.alfresco.service.cmr.repository.NodeRef;
-import org.alfresco.service.cmr.repository.TransformationOptions;
 import org.alfresco.service.cmr.site.SiteInfo;
 import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
@@ -29,6 +28,7 @@ import org.alfresco.util.TempFileProvider;
 import org.junit.Test;
 import org.redpill.alfresco.test.AbstractRepoIntegrationTest;
 import org.redpill.repo.content.transform.pandoc.PandocContentTransformerWorker;
+import org.redpill.repo.content.transform.pandoc.PandocTransformationOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -136,9 +136,15 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
       ContentWriter writer = new FileContentWriter(targetFile);
       writer.setMimetype(mimetype);
 
-      TransformationOptions options = new TransformationOptions();
+      PandocTransformationOptions options = new PandocTransformationOptions();
+      options.setMarginTop("4cm");
+      options.setMarginRight("4cm");
+      options.setMarginBottom("4cm");
+      options.setMarginLeft("4cm");
 
       _worker.transform(reader, writer, options);
+
+      System.out.println(targetFile.getAbsolutePath());
 
       assertTrue(targetFile.exists());
       assertTrue(targetFile.isFile());
@@ -161,6 +167,8 @@ public class PandocContentTransformerWorkerIntegrationTest extends AbstractRepoI
       ContentReader reader = _contentService.getReader(rendition, ContentModel.PROP_CONTENT);
 
       File targetFile = TempFileProvider.createTempFile("temp_", "." + extension);
+      
+      System.out.println(targetFile.getAbsolutePath());
 
       reader.getContent(targetFile);
 

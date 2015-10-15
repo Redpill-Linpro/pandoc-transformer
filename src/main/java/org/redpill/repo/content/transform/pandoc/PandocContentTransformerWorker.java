@@ -120,14 +120,45 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
     String sourceFormat = "markdown_github";
     String targetFormat = getTargetFormat(targetMimetype);
-    
+
     properties.put("from_format", sourceFormat);
     properties.put("to_format", targetFormat);
     properties.put("source", sourceFile.getAbsolutePath());
     properties.put("target", targetFile.getAbsolutePath());
+    properties.put("margin_top", PandocTransformationOptions.DEFAULT_MARGIN_TOP);
+    properties.put("margin_bottom", PandocTransformationOptions.DEFAULT_MARGIN_BOTTOM);
+    properties.put("margin_right", PandocTransformationOptions.DEFAULT_MARGIN_RIGHT);
+    properties.put("margin_left", PandocTransformationOptions.DEFAULT_MARGIN_LEFT);
+    properties.put("papersize", PandocTransformationOptions.DEFAULT_PAPER_SIZE);
 
-    RuntimeExec.ExecutionResult result = executer.execute(properties, timeoutMs);
+    if (options instanceof PandocTransformationOptions) {
+      PandocTransformationOptions pandocOptions = (PandocTransformationOptions) options;
 
+      if (StringUtils.isNotBlank(pandocOptions.getMarginTop())) {
+        properties.put("margin_top", pandocOptions.getMarginTop());
+      }
+
+      if (StringUtils.isNotBlank(pandocOptions.getMarginBottom())) {
+        properties.put("margin_bottom", pandocOptions.getMarginBottom());
+      }
+
+      if (StringUtils.isNotBlank(pandocOptions.getMarginRight())) {
+        properties.put("margin_right", pandocOptions.getMarginRight());
+      }
+
+      if (StringUtils.isNotBlank(pandocOptions.getMarginLeft())) {
+        properties.put("margin_left", pandocOptions.getMarginLeft());
+      }
+
+      if (StringUtils.isNotBlank(pandocOptions.getPaperSize())) {
+        properties.put("papersize", pandocOptions.getPaperSize());
+      }
+    }
+    
+    ExecutionResult result = executer.execute(properties, timeoutMs);
+    
+    System.out.println(result);
+    
     if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0) {
       throw new ContentIOException("Failed to perform Pandoc transformation: \n" + result);
     }
@@ -136,10 +167,10 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
     if (!targetFile.exists() || targetFile.length() == 0) {
       throw new ContentIOException("Pandoc transformation failed to write output file");
     }
-    
+
     // upload the output image
     writer.putContent(targetFile);
-    
+
     // done
     if (LOG.isDebugEnabled()) {
       LOG.debug("Transformation completed: \n" + "   source: " + reader + "\n" + "   target: " + writer + "\n" + "   options: " + options);
@@ -160,7 +191,7 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
       }
 
       _versionString = result.getStdOut().trim();
-      
+
       _available = true;
     } catch (Throwable e) {
       _available = false;
@@ -195,7 +226,7 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
   private String getTargetFormat(String targetMimetype) {
     Assert.hasText(targetMimetype);
-    
+
     if (MimetypeMap.MIMETYPE_PDF.equalsIgnoreCase(targetMimetype)) {
       return "latex";
     }
