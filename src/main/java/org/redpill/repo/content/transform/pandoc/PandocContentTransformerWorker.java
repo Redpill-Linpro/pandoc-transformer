@@ -32,6 +32,7 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
   public static final String MIMETYPE_MARKDOWN1 = "text/x-markdown";
   public static final String MIMETYPE_MARKDOWN2 = "text/x-web-markdown";
+  public static final String MIMETYPE_MARKDOWN3 = "text/markdown";
 
   private static final Logger LOG = Logger.getLogger(PandocContentTransformerWorker.class);
 
@@ -154,11 +155,11 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
         properties.put("papersize", pandocOptions.getPaperSize());
       }
     }
-    
+
     ExecutionResult result = executer.execute(properties, timeoutMs);
-    
+
     System.out.println(result);
-    
+
     if (result.getExitValue() != 0 && result.getStdErr() != null && result.getStdErr().length() > 0) {
       throw new ContentIOException("Failed to perform Pandoc transformation: \n" + result);
     }
@@ -209,19 +210,23 @@ public class PandocContentTransformerWorker extends ContentTransformerHelper imp
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_PDF));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_PDF));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN3, MimetypeMap.MIMETYPE_PDF));
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN3, MimetypeMap.MIMETYPE_OPENXML_WORDPROCESSING));
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_HTML));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_HTML));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN3, MimetypeMap.MIMETYPE_HTML));
 
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN1, MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT));
     explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN2, MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT));
+    explicitTransformations.add(new ExplictTransformationDetails(MIMETYPE_MARKDOWN3, MimetypeMap.MIMETYPE_OPENDOCUMENT_TEXT));
   }
 
   private boolean isMarkdown(String sourceMimetype) {
-    return sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN1) || sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN2);
+    return sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN1) || sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN2) || sourceMimetype.equalsIgnoreCase(MIMETYPE_MARKDOWN3);
   }
 
   private String getTargetFormat(String targetMimetype) {
