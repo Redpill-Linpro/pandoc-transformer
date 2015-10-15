@@ -12,7 +12,7 @@
   <version>1.0.1-SNAPSHOT</version>
   <name>Pandoc Transformer</name>
   <description>An Alfresco transformer for pandoc</description>
-  <url>https://github.com/oakman/pandoc-transformer</url>
+  <url>https://github.com/Redpill-Linpro/pandoc-transformer</url>
 
   <properties>
     <alfresco.version>4.2.4</alfresco.version>
@@ -34,14 +34,14 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git@github.com:oakman/pandoc-transformer.git</connection>
-    <developerConnection>scm:git:git@github.com:oakman/pandoc-transformer.git</developerConnection>
-    <url>scm:git:git@github.com:oakman/pandoc-transformer.git</url>
+    <connection>scm:git:git@github.com:Redpill-Linpro/pandoc-transformer.git</connection>
+    <developerConnection>scm:git:git@github.com:Redpill-Linpro/pandoc-transformer.git</developerConnection>
+    <url>scm:git:git@github.com:Redpill-Linpro/pandoc-transformer.git</url>
   </scm>
   
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/oakman/pandoc-transformer/issues</url>
+    <url>https://github.com/Redpill-Linpro/pandoc-transformer/issues</url>
   </issueManagement>
 
   <dependencies>
