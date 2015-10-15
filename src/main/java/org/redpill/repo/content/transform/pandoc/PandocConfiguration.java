@@ -1,9 +1,7 @@
 package org.redpill.repo.content.transform.pandoc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.alfresco.util.exec.RuntimeExec;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +42,7 @@ public class PandocConfiguration {
     command.add("--variable");
     command.add("papersize:\"${papersize}\"");
     command.add("--variable");
-    command.add("geometry:\"top=${margin_top},bottom=${margin_bottom},left=${margin_left},right=${margin_right}\"");
+    command.add("geometry:top=${margin_top},bottom=${margin_bottom},left=${margin_left},right=${margin_right}");
 
     executer.setCommand(command.toArray(new String[command.size()]));
 
