@@ -12,6 +12,7 @@
   <version>1.0.1-SNAPSHOT</version>
   <name>Pandoc Transformer</name>
   <description>An Alfresco transformer for pandoc</description>
+  <url>https://github.com/oakman/pandoc-transformer</url>
 
   <properties>
     <alfresco.version>4.2.4</alfresco.version>
@@ -39,7 +40,7 @@
   </scm>
   
   <issueManagement>
-    <system>Git</system>
+    <system>GitHub</system>
     <url>https://github.com/oakman/pandoc-transformer/issues</url>
   </issueManagement>
 
