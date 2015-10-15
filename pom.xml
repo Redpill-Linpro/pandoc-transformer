@@ -9,7 +9,7 @@
 
   <groupId>org.redpill-linpro.alfresco</groupId>
   <artifactId>pandoc-transformer</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>Pandoc Transformer</name>
   <description>An Alfresco transformer for pandoc</description>
 
