@@ -44,7 +44,7 @@ public class PandocConfiguration {
     command.add("--variable");
     command.add("papersize:\"${papersize}\"");
     command.add("--variable");
-    command.add("geometry:\"top=${margin_top},bottom=${margin_bottom},left=${margin_left},right=${margin_right}\"");
+    command.add("geometry:top=${margin_top},bottom=${margin_bottom},left=${margin_left},right=${margin_right}");
 
     executer.setCommand(command.toArray(new String[command.size()]));
 
