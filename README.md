@@ -1,6 +1,6 @@
 # Pandoc Transformer for Alfresco
 
-Writing documentation in a word processor can be a tedious job. Writing it in Markdown on the other hand is nice :) Since there's no previewer for Markdown documents in Alfresco, a transformer is the next best thing. This projects aim is to create a simple transformer that creates PDF documents out of Markdown documents. To achieve this it uses the excellent [Pandoc](http://www.pandoc.org) command line binary. This module only handles conversions from .md to .pdf, but it can be extended to handle other formats too, as long as Pandoc supportes them.
+Writing documentation in a word processor can be a tedious job. Writing it in Markdown on the other hand is nice :) Since there's no previewer for Markdown documents in Alfresco, a transformer is the next best thing. This projects aim is to create a simple transformer that creates PDF documents out of Markdown documents. To achieve this it uses the excellent [Pandoc](http://www.pandoc.org) command line binary. This module only handles conversions from .md to .pdf, but it can be extended to handle other formats too, as long as Pandoc supports them.
 
 ## Building
 
